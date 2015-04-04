@@ -4,6 +4,10 @@
 
 ## Usage
 
+In your project.clj file:
+
+[![Clojars Project](http://clojars.org/clj-alipay/latest-version.svg)](http://clojars.org/clj-alipay)
+
 In your namespace declaration:
 
 ```clojure
