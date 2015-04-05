@@ -45,7 +45,7 @@
   (fn [request]
     (if (alipay-return? alipay request)
       (if (and
-           (or (alipay-virity alipay request)
+           (or (alipay-virity? alipay request)
                (timbre/info "支付宝发来的消息校验处理失败:" request))
            (or (from-alipay? alipay (get-in request [:params :notify_id]))
                (timbre/info "不是支付宝发来的消息:" request)))

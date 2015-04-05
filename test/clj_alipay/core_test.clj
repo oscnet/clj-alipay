@@ -82,7 +82,7 @@
     (let [req (create-request-map)
           sign (create-sign req (:key alipay))
           req (assoc req :sign sign)]
-      (is (= true (alipay-virity alipay {:params req}))))))
+      (is (= true (alipay-virity? alipay {:params req}))))))
 
 (deftest test-app
   (testing "create-alipay-request"

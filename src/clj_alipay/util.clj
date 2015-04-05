@@ -11,22 +11,20 @@
     (try (.getContextPath context)
       (catch IllegalArgumentException _ context))))
 
-(defn- alipay-req
+(defn- build-alipay-req
   [alipay ali-req req]
   (let [url (str (-> req :scheme name)
                  "://"
                  (get-in req [:headers "host"])
                  (servlet-context req))]
-    (->
-     (dissoc alipay :key :notify :return)
-     (merge ali-req)
-     (assoc
-       :service "create_direct_pay_by_user"
-       :payment_type "1"
-       :_input_charset "utf-8"
-       :seller_id (:partner alipay)
-       :notify_url (str url (:notify alipay))
-       :return_url (str url (:return alipay))))))
+    (assoc ali-req
+      :partner (:partner alipay)
+      :service "create_direct_pay_by_user"
+      :payment_type "1"
+      :_input_charset "utf-8"
+      :seller_id (:partner alipay)
+      :notify_url (str url (:notify alipay))
+      :return_url (str url (:return alipay)))))
 
 (defn- get-sign-string
   "生成待签名字符串"
@@ -49,7 +47,7 @@
 
 (defn create-alipay-request
   [alipay ali-req request]
-  (let [req (alipay-req alipay ali-req request)
+  (let [req (build-alipay-req alipay ali-req request)
         sign (create-sign req (:key alipay))]
     (assoc req :sign sign :sign_type "MD5")))
 
@@ -72,16 +70,19 @@
        [:input {:type "submit" :value "确认" :style "display:none;"}]
        [:script "document.forms['alipaysubmit'].submit();"]]])))
 
-(defn alipay-return? [alipay req]
-  (or
-   (= (:uri req) (str (servlet-context req) (:notify alipay)))
-   (= (:uri req) (str (servlet-context req) (:return  alipay)))))
+(defn alipay-return?
+  "检测是否是支付宝请求"
+  [alipay req]
+  (let [context (servlet-context req)]
+    (or
+     (= (:uri req) (str context (:notify alipay)))
+     (= (:uri req) (str context (:return alipay))))))
 
-(defn alipay-virity [alipay req]
-  (=
-   (->   (:params req)
-         (create-sign (:key alipay)))
-   (get-in req [:params :sign])))
+(defn alipay-virity?
+  "校验报文"
+  [alipay req]
+  (= (create-sign (:params req) (:key alipay))
+     (get-in req [:params :sign])))
 
 (defn from-alipay?
   "验证是否是支付宝发来的消息"
