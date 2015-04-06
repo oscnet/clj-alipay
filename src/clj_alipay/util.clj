@@ -2,7 +2,6 @@
   (:use [hiccup.core])
   (:require [noir.util.crypt :refer [md5]]
             [hiccup.page :refer [html5]]
-            [taoensso.timbre :as timbre]
             [clj-http.client :as client]))
 
 (defn- servlet-context

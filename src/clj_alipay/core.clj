@@ -1,8 +1,7 @@
 (ns clj-alipay.core
   (:use [hiccup.core]
         [clj-alipay.util])
-  (:require [ring.util.response :refer [content-type response not-found]]
-            [taoensso.timbre :as timbre]
+  (:require [ring.util.response :refer [content-type response status]]
             [crypto.random :as random]
             [compojure.response :refer [Renderable]]))
 
@@ -45,10 +44,8 @@
   (fn [request]
     (if (alipay-return? alipay request)
       (if (and
-           (or (alipay-virity? alipay request)
-               (timbre/info "支付宝发来的消息校验处理失败:" request))
-           (or (from-alipay? alipay (get-in request [:params :notify_id]))
-               (timbre/info "不是支付宝发来的消息:" request)))
+           (alipay-virity? alipay request)
+           (from-alipay? alipay (get-in request [:params :notify_id])))
         (hander (fake-anti-forgery request))
-        (not-found "支付宝发来的请求参数有问题"))
+        (status (response "wrap-alipay invalid request!") 400))
       (hander request))))

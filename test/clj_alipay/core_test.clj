@@ -1,5 +1,5 @@
 (ns clj-alipay.core-test
- (:import [java.net URLEncoder URLDecoder])
+  (:import [java.net URLEncoder URLDecoder])
   (:use ring.mock.request)
   (:require [clojure.test :refer :all]
             [clj-alipay.core :refer :all]
@@ -103,4 +103,6 @@
   (testing "notify"
     (fake/with-fake-routes {#"https://mapi.alipay.com/gateway.do.*" (fn [request] {:status 200 :headers {} :body "true"})}
       (let [response (app (request :post "/alipay/notify" notify-req))]
-      (is (= "success" (:body response)))))))
+        (is (= "success" (:body response))))
+      (let [response (app (request :post "/alipay/notify" (assoc notify-req :seller_id "123")))]
+        (is (= 400 (:status response)))))))
