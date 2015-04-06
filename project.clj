@@ -1,4 +1,4 @@
-(defproject clj-alipay "0.1.0"
+(defproject clj-alipay "0.1.1"
   :description "支付宝即时到账交易接口(create_direct_pay_by_user)"
   :url "http://www.zjpjhx.com"
   :license {:name "Eclipse Public License"
