@@ -9,5 +9,5 @@
                  [hiccup "1.0.5"]
                  [com.taoensso/timbre "3.4.0"]
                  [crypto-random "1.2.0"]
-                 [lib-noir "0.9.5"]
-                 [clj-http-fake "1.0.1"]])
+                 [lib-noir "0.9.5"]]
+  :profiles {:test {:dependencies [[clj-http-fake "1.0.1"]]}})
