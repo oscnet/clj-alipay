@@ -13,7 +13,6 @@ In your namespace declaration:
 ```clojure
 (ns myapp.test.core
   (:require [clj-alipay.core :refer :all]
-            [clj-alipay.util :refer :all]
             [noir.util.middleware :refer [app-handler]]))
 ```
 
