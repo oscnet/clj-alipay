@@ -27,6 +27,17 @@ In your namespace declaration:
    })
 
 ```
+
+自动转支付宝支付:
+
+```clojure
+(defn pay-page []
+  (pay alipay {:out_trade_no "001010"
+               :subject "商品名称"
+               :total_fee "0.10"
+               }))
+```
+
 支付后页面跳转同步通知页面处理:(请求参数说明请查看支付宝接口文档)
 
 ```clojure
@@ -44,16 +55,6 @@ In your namespace declaration:
   (timbre/info "接收支付宝 notify 消息" req)
   ...
   "success")
-```
-
-生成支付页面:
-
-```clojure
-(defn pay-page []
-  (pay alipay {:out_trade_no "001010"
-               :subject "商品名称"
-               :total_fee "0.10"
-               }))
 ```
 
 define Compojure routes:
