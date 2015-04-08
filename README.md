@@ -2,6 +2,8 @@
 
 支付宝即时到账交易接口(create_direct_pay_by_user)
 
+[![Circle CI](https://circleci.com/gh/oscnet/clj-alipay.svg?style=svg)](https://circleci.com/gh/oscnet/clj-alipay)
+
 ## Usage
 
 In your project.clj file:
