@@ -35,7 +35,10 @@
 
 (def app (app-handler
           [home-routes]
-          :middleware [wrap-anti-forgery #(wrap-alipay % alipay)]
+          :middleware [
+                       #(wrap-anti-forgery-except % (alipay-request? alipay))
+                       ;wrap-anti-forgery #(wrap-alipay % alipay)
+                       ]
           :ring-defaults
           (assoc-in site-defaults [:security :anti-forgery] false)
           :access-rules []
@@ -105,4 +108,4 @@
       (let [response (app (request :post "/alipay/notify" notify-req))]
         (is (= "success" (:body response))))
       (let [response (app (request :post "/alipay/notify" (assoc notify-req :seller_id "123")))]
-        (is (= 400 (:status response)))))))
+        (is (= 403 (:status response)))))))

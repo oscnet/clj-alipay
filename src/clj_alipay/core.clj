@@ -3,6 +3,7 @@
         [clj-alipay.util])
   (:require [ring.util.response :refer [content-type response status]]
             [crypto.random :as random]
+            [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
             [compojure.response :refer [Renderable]]))
 
 (deftype RenderAlipay [alipay alipay-request]
@@ -47,5 +48,38 @@
            (alipay-virity? alipay request)
            (from-alipay? alipay (get-in request [:params :notify_id])))
         (hander (fake-anti-forgery request))
-        (status (response "wrap-alipay invalid request!") 400))
+        (status (response "wrap-alipay invalid request!") 403))
       (hander request))))
+
+(defn alipay-request? [alipay]
+  (fn [request]
+    (and
+     (alipay-return? alipay request)
+     (alipay-virity? alipay request)
+     (from-alipay? alipay (get-in request [:params :notify_id])))))
+
+(defn wrap-anti-forgery-except
+  "如果 (except-f req) 返回真,则不执行 anti-forgery
+  例:
+
+    (->
+      handler
+      (wrap-anti-forgery-except (alipay-request? alipay)))
+
+  or:
+
+  (def app (app-handler
+          [home-routes]
+          :middleware [#(wrap-anti-forgery-except % (alipay-request? alipay))]
+          :ring-defaults
+          (assoc-in site-defaults [:security :anti-forgery] false)
+          :access-rules []
+          :formats [:json-kw :edn :transit-json]))
+
+  则对来自支付宝请求不运行 anti-forgery"
+  [handler except-f]
+  (fn [req]
+    (let [anti-forgery (wrap-anti-forgery handler)]
+      (if (except-f req)
+          (handler req)
+          (anti-forgery req)))))
